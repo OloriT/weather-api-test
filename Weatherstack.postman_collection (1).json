@@ -1,0 +1,567 @@
+{
+	"info": {
+		"_postman_id": "b4cfef34-f042-4826-95a3-3317bd7091e7",
+		"name": "Weatherstack",
+		"description": "# Quick Start Guide\n\n## Step 1: Your API Access Key\n\nTo get started quickly, you need to fork the MarketStack Postman Collection. Simply click the button below to fork it.\n\n[<img src=\"https://run.pstmn.io/button.svg\">](https://god.gw.postman.com/run-collection/10131015-276c4312-f682-425d-b6b1-0f82c0a7f2b3?action=collection/fork)\n\n### Step 2: Get your API Access Key\n\n1. Go to the [Weatherstack](https://weatherstack.com/?utm_source=Postman&utm_medium=Referral) website and choose the right subscription plan for your particular project.\n2. Get your personal API Access Key on the [Dashboard](https://weatherstack.com/dashboard) to authenticate with the API. Keep it safe! You can reset it at any time in your Account Dashboard.\n    \n\n## Step 3: Make your first API call\n\nWeatherstack Postman collection contains all the endpoints supported by Weatherstack API.\n\n1. Current weather data\n2. Historical weather data\n3. Weather forecast\n4. Autocomplete/Location lookup",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20842590"
+	},
+	"item": [
+		{
+			"name": "Current",
+			"item": [
+				{
+					"name": "Current Location",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains the correct query result\", function () {\r",
+									"  var jsonData = pm.response.json();\r",
+									"  pm.expect(jsonData.location.name).to.eql('New Delhi');\r",
+									"  pm.expect(jsonData.location).to.have.property('lat');\r",
+									"  pm.expect(jsonData.location).to.have.property('lon');\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains correct data type for temperature\", function () {\r",
+									"  var jsonData = pm.response.json();\r",
+									"  pm.expect(jsonData.current.temperature).to.be.a('number');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let iteration = pm.variables.get(\"iteration\") || 0;\r",
+									"pm.variables.set(\"iteration\", ++iteration);\r",
+									"\r",
+									"// Define how many iterations you want\r",
+									"const maxIterations = 5; \r",
+									"\r",
+									"if (iteration < maxIterations) {\r",
+									"    postman.setNextRequest(\"Current Location\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.weatherstack.com/current?query=New Delhi",
+							"protocol": "https",
+							"host": [
+								"api",
+								"weatherstack",
+								"com"
+							],
+							"path": [
+								"current"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "New Delhi"
+								}
+							]
+						},
+						"description": "\\`Current\\` endpoint let you fetch the weather stats of the metioned location in the \\`query\\` parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Multiple current locations",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Location name should be one of London, Singapur, or Shanghai\", function () {\r",
+									"  var jsonData = pm.response.json();\r",
+									"  pm.expect(jsonData.location.name).to.be.oneOf(['London', 'Singapur', 'Shanghai']);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let iteration = pm.variables.get(\"iteration\") || 0;\r",
+									"pm.variables.set(\"iteration\", ++iteration);\r",
+									"\r",
+									"// Define how many iterations you want\r",
+									"const maxIterations = 5; \r",
+									"\r",
+									"if (iteration < maxIterations) {\r",
+									"    postman.setNextRequest(\"Multiple current Location\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.weatherstack.com/current?query=London;Singapur;Shanghai",
+							"protocol": "https",
+							"host": [
+								"api",
+								"weatherstack",
+								"com"
+							],
+							"path": [
+								"current"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "London;Singapur;Shanghai"
+								}
+							]
+						},
+						"description": "To make use of the API's bulk query capability, you can also pass multiple semicolon-separated locations to the API."
+					},
+					"response": []
+				},
+				{
+					"name": "Location Identifiers",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Location should contain name and country\", function () {\r",
+									"  var jsonData = pm.response.json();\r",
+									"  pm.expect(jsonData.location).to.have.property('name');\r",
+									"  pm.expect(jsonData.location).to.have.property('country');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let iteration = pm.variables.get(\"iteration\") || 0;\r",
+									"pm.variables.set(\"iteration\", ++iteration);\r",
+									"\r",
+									"// Define how many iterations you want\r",
+									"const maxIterations = 5; \r",
+									"\r",
+									"if (iteration < maxIterations) {\r",
+									"    postman.setNextRequest(\"Location Identifiers\");\r",
+									"} else {\r",
+									"    postman.setNextRequest(null);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.weatherstack.com/current?query=40.7831,-73.9712",
+							"protocol": "https",
+							"host": [
+								"api",
+								"weatherstack",
+								"com"
+							],
+							"path": [
+								"current"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "40.7831,-73.9712",
+									"description": "Pass latitude and longitude coordinates to the API and auto-detect the associated location.\n"
+								}
+							]
+						},
+						"description": "Aside from simply passing the name of a city, there are multiple other ways of passing a location to the API:\n\n| Definition | Example | Description |\n| --- | --- | --- |\n| Location Name | `query = New York` | The standard way of passing a location name to the API. |\n| UK/Canada/US ZIP Code | `query = 99501` | Pass a UK/Canada/US ZIP code to the API and auto-detect the associated location. |\n| Coordinates (Lat/Lon) | `query = 40.7831,-73.9712` | Pass latitude and longitude coordinates to the API and auto-detect the associated location. |\n| IP Address | `query = 153.65.8.20` | Pass an IP address to the API and auto-detect the associated location. |\n| IP Address (Auto-Fetch) | `query = fetch:ip` | Pass `fetch:ip` to the API in order to auto-detect the requester IP address and location. |"
+					},
+					"response": []
+				}
+			],
+			"description": "Current endpoint let you fetch the weather stats of the metioned location in the `query` parameter."
+		},
+		{
+			"name": "Historical",
+			"item": [
+				{
+					"name": "Historical data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Historical data contains date 2015-01-21\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"\r",
+									"    // Check if the historical data contains the '2015-01-21' date\r",
+									"    pm.expect(jsonData.historical).to.have.property('2015-01-21');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.weatherstack.com/historical?query=New York&historical_date=2015-01-21&hourly=1",
+							"protocol": "https",
+							"host": [
+								"api",
+								"weatherstack",
+								"com"
+							],
+							"path": [
+								"historical"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "New York"
+								},
+								{
+									"key": "historical_date",
+									"value": "2015-01-21"
+								},
+								{
+									"key": "hourly",
+									"value": "1"
+								}
+							]
+						},
+						"description": "To look up historical weather data all the way back to 2008, simply pass one date of your choice (later than July 2008) or multiple semicolon-separated dates to the weatherstack API's `historical` endpoint using the `historical_date` parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Historical time series",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Historical data contains dates between 2015-01-21 and 2015-01-25\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var historicalData = jsonData.historical;\r",
+									"\r",
+									"    // Define start and end date as Date objects for comparison\r",
+									"    var startDate = new Date(\"2015-01-21\");\r",
+									"    var endDate = new Date(\"2015-01-25\");\r",
+									"\r",
+									"    // Loop through each date in the historical data\r",
+									"    for (var date in historicalData) {\r",
+									"        if (historicalData.hasOwnProperty(date)) {\r",
+									"            var currentDate = new Date(date);\r",
+									"\r",
+									"            // Check if the date is within the start and end date range\r",
+									"            pm.expect(currentDate >= startDate && currentDate <= endDate).to.be.true;\r",
+									"        }\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.weatherstack.com/historical?query=New York&historical_date_start=2015-01-21&historical_date_end=2015-01-25",
+							"protocol": "https",
+							"host": [
+								"api",
+								"weatherstack",
+								"com"
+							],
+							"path": [
+								"historical"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "New York"
+								},
+								{
+									"key": "historical_date_start",
+									"value": "2015-01-21"
+								},
+								{
+									"key": "historical_date_end",
+									"value": "2015-01-25"
+								}
+							]
+						},
+						"description": "The `historical` endpoint is also capable of processing historical time-series results if the parameters `historical_date_start` and `historical_date_end` are set to valid dates."
+					},
+					"response": []
+				}
+			],
+			"description": "To look up historical weather data all the way back to 2008, simply pass one date of your choice (later than July 2008) or multiple semicolon-separated dates to the weatherstack API's `historical` endpoint using the `historical_date` parameter."
+		},
+		{
+			"name": "Forecast",
+			"item": [
+				{
+					"name": "forecast data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Historical data contains only dates within the last 7 days from 2024-03-24\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var historicalData = jsonData.historical;\r",
+									"    \r",
+									"    // Define today's date and 7 days ago\r",
+									"    var today = new Date(\"2024-03-24\");\r",
+									"    var sevenDaysAgo = new Date(today);\r",
+									"    sevenDaysAgo.setDate(today.getDate() - 7);  // Subtract 7 days\r",
+									"\r",
+									"    // Loop through each date in the historical data\r",
+									"    for (var date in historicalData) {\r",
+									"        if (historicalData.hasOwnProperty(date)) {\r",
+									"            var currentDate = new Date(date);\r",
+									"\r",
+									"            // Check if the date is within the last 7 days range\r",
+									"            pm.expect(currentDate >= sevenDaysAgo && currentDate <= today).to.be.true;\r",
+									"        }\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.weatherstack.com/forecast?query=New York&forecast_days=7",
+							"protocol": "https",
+							"host": [
+								"api",
+								"weatherstack",
+								"com"
+							],
+							"path": [
+								"forecast"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "New York"
+								},
+								{
+									"key": "forecast_days",
+									"value": "7"
+								}
+							]
+						},
+						"description": "The weatherstack is capable of returning weather forecast data for up to 14 days into the future. To get weather forecasts, simply use the API's `forecast` endpoint and define your preferred number of forecast days using the `forecast_days` parameter."
+					},
+					"response": []
+				}
+			],
+			"description": "The weatherstack API is capable of returning weather forecast data for up to 14 days into the future. To get weather forecasts, simply use the API's `forecast` endpoint and define your preferred number of forecast days using the `forecast_days` parameter."
+		},
+		{
+			"name": "Autocomplete/Location Lookup",
+			"item": [
+				{
+					"name": "Autocomplete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response contains only London result\", function () {\r",
+									"  var jsonData = pm.response.json();\r",
+									"  pm.expect(jsonData.location.name).to.eql('London');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://api.weatherstack.com/autocomplete?query=london",
+							"protocol": "https",
+							"host": [
+								"api",
+								"weatherstack",
+								"com"
+							],
+							"path": [
+								"autocomplete"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "london"
+								}
+							]
+						},
+						"description": "The weatherstack API's location `autocomplete` endpoint can be used to pinpoint one or more specific locations and their identifying response objects with the aim of later passing them to a weather data endpoint. In our example below, we are looking for London, United Kingdom.\n\nA successful API request will return one or multiple results that match your search query. In our example, the first array object (London, United Kingdom) contains the correct result. Now that we have our identifying response objects of the target location we were looking for, we can make sure that the correct location is used by other API endpoints by using one of the available location identifiers (ideally: `lat` and `lon`) for upcoming queries."
+					},
+					"response": []
+				}
+			],
+			"description": "The weatherstack API's location `autocomplete` endpoint can be used to pinpoint one or more specific locations and their identifying response objects with the aim of later passing them to a weather data endpoint."
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "in",
+				"value": "query",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "{{access_key}}",
+				"type": "string"
+			},
+			{
+				"key": "key",
+				"value": "access_key",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "access_key",
+			"value": "---",
+			"type": "string"
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://api.weatherstack.com",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
